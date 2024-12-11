@@ -1,11 +1,10 @@
-import BreachCard from "@/modules/BreachCard";
+import { Suspense } from 'react'
 import SearchInput from "@/components/SearchInput";
-import Pagination from "@/modules/Pagination";
-import BreachSummary from "@/modules/BreachSummary";
+import Loader from "@/components/Loader/Loader";
+import Breaches from "@/modules/Breaches";
 
-const Breaches = async ({ searchQuery }) => {
-  const breachesData = [];
-  const data = undefined;
+const Home = async ({ searchParams }) => {
+  const searchparams = await searchParams;
 
   return (
     <div className="flex h-auto justify-center">
@@ -18,29 +17,18 @@ const Breaches = async ({ searchQuery }) => {
           <SearchInput
             className={"max-w-full rounded-xl py-6 !text-lg"}
             placeholder={"Search"}
-            initialValue={searchQuery}
+            initialValue={searchparams.q}
           />
         </div>
-        <div className="mb-32 grid justify-items-center xl:grid-cols-2 grid-cols-1 gap-5 w-full">
-          {breachesData.map((breach) => (
-            <BreachCard
-              icon={
-                breach.logo !== ""
-                  ? breach.logo
-                  : "/img/icons/default-breach-icon.svg"
-              }
-              description={breach.description}
-              key={breach.name}
-              title={breach.name}
-              date={breach.date_breached}
-              leaked={breach.compromised_fields}
-            />
-          ))}
-        </div>
-        <Pagination lengthData={data?.matches} />
+        <Suspense
+          key={searchparams.p + searchparams.offset}
+          fallback={<Loader />}
+        >
+          <Breaches searchparams={searchparams} />
+        </Suspense>
       </div>
     </div>
   );
 };
 
-export default Breaches;
+export default Home;
